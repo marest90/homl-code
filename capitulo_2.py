@@ -20,19 +20,19 @@ from sklearn.ensemble import RandomForestRegressor
 from sklearn.model_selection import GridSearchCV
 
 from sklearn.svm import SVR
-#print(pd.__version__)
+
+print('version: 1.01')
+
+#########################################################################
+#Importamos el dataset
 
 HOUSING_PATH = 'datasets/'
 
 def load_housing_data(ruta):
-	#csv_path = os.path.join(housing_path, "housing.csv")
 	datos = pd.read_csv(ruta + 'housing.csv')
 	return datos
 
-print('version: 1.01')
-
 housing = load_housing_data(HOUSING_PATH)
-
 
 ###########################################################################
 #Analizando la data
@@ -42,81 +42,80 @@ print('Encabezado:')
 print(housing.head()) #imprime el encabezado de la lista
 print('##################')
 
-#print('total bedrooms:')
-#print(housing["total_bedrooms"]) #imprime el encabezado de la lista
-#print('##################')
+print('total bedrooms:')
+print(housing["total_bedrooms"]) #imprime el encabezado de la lista
+print('##################')
 
-#print('Info:')
-#housing.info() # imprime la informacion básica. con verbose = True tira todo y con False solo una parte
-#print('##################')
+print('Info:')
+housing.info() # imprime la informacion básica. Con verbose = True tira todo y con False solo una parte
+print('##################')
 
-#print('Contenido de ocean_proximity:')
-#print(housing["ocean_proximity"].value_counts()) #te dice que categorias existen y cuantos pertenecen a cada una
-#print('##################')
+print('Contenido de ocean_proximity:')
+print(housing["ocean_proximity"].value_counts()) #te dice que categorias existen y cuantos pertenecen a cada una
+print('##################')
 
-#for c in housing.columns:
-#	print(c)
-#	plt.figure(c)
-#	plt.hist(housing[c],bins=50)
-#	#plt.hist(housing,bins=50, figsize=(20,15))
-#	plt.savefig('src-temp-docker/' + c + '.png')
+#Graficamos histogramas de todas las categorias
+for c in housing.columns:
+	print(c)
+	plt.figure(c)
+	plt.hist(housing[c],bins=50)
+	#plt.hist(housing,bins=50, figsize=(20,15))
+	plt.savefig('src-temp-docker/' + c + '.png')
 
-#plt.hist(housing,bins=50, figsize=(20,15))
-#plt.savefig('src-temp-docker/histogramas.png')
 
-#print('Estadística:')
-#print(housing.describe())
-#print('##################')
+print('Estadística:')
+print(housing.describe())
+print('##################')
 
 
 ##################################################################################
 #Separando los sets
 
 housing["income_cat"] = pd.cut(housing["median_income"],bins=[0., 1.5, 3.0, 4.5, 6., np.inf],labels=[1, 2, 3, 4, 5]) #tomo la columna con la ganancia media y lo divido en cinco grupos, y etiqueto cada uno en un grupo
-#print('overall =',housing["income_cat"].value_counts() / len(housing))
-#plt.figure("income_cat")
-#plt.hist(housing["income_cat"])
-#plt.savefig('src-temp-docker/income_cat.png')
+print('overall =',housing["income_cat"].value_counts() / len(housing)) #proporciones en el train set
+
+plt.figure("income_cat")
+plt.hist(housing["income_cat"])
+plt.savefig('src-temp-docker/income_cat.png')
 
 #separo de forma random
 train_set, test_set = train_test_split(housing, test_size=0.2,random_state=42) #divido en train y test usando una funcion de scikit learn
-#print('random =',test_set["income_cat"].value_counts() / len(test_set))
+print('random =',test_set["income_cat"].value_counts() / len(test_set)) #proporciones cuando elijo de forma random
 
 #separo considerando las proporciones del income
 split = StratifiedShuffleSplit(n_splits=1, test_size=0.2, random_state=42)
 for train_index, test_index in split.split(housing, housing["income_cat"]):
 	strat_train_set = housing.loc[train_index]
 	strat_test_set = housing.loc[test_index]
-#print('stratified =',strat_test_set["income_cat"].value_counts() / len(strat_test_set))
-
+print('stratified =',strat_test_set["income_cat"].value_counts() / len(strat_test_set)) #proporciones cuando elijo con criterio
 
 
 #####################################################################################
 #Trabajamos con el estratificado. Visualizamos la data
 housing = strat_train_set.copy()
 
-#plt.figure("mapa")
+plt.figure("mapa")
 housing.plot(kind="scatter", x="longitude", y="latitude",alpha=0.1)
-#plt.savefig('src-temp-docker/mapa.png')
+plt.savefig('src-temp-docker/mapa.png')
 
-#plt.figure("mapa-valor")
-#housing.plot(kind="scatter", x="longitude", y="latitude", alpha=0.4,s=housing["population"]/100, label="population", figsize=(10,7),
-#c="median_house_value", cmap=plt.get_cmap("jet"), colorbar=True,)#s es para cambiar el tamaño del marcador según alguna variable elegida, c es para establecer una gama de colores según otra variable
-#plt.legend()
-#plt.savefig('src-temp-docker/mapa-valor.png')
+plt.figure("mapa-valor")
+housing.plot(kind="scatter", x="longitude", y="latitude", alpha=0.4,s=housing["population"]/100, label="population", figsize=(10,7),
+c="median_house_value", cmap=plt.get_cmap("jet"), colorbar=True,)#s es para cambiar el tamaño del marcador según alguna variable elegida, c es para establecer una gama de colores según otra variable
+plt.legend()
+plt.savefig('src-temp-docker/mapa-valor.png')
 
 
 #####################################################################################33
 #Buscando correlaciones
 
 corr_matrix = housing.corr() #mide correlacion solo lineal
-#print(corr_matrix["median_house_value"].sort_values(ascending=False))
+print(corr_matrix["median_house_value"].sort_values(ascending=False))
 
+#graficamos las correlaciones entre distintos atributos
 attributes = ["median_house_value", "median_income", "total_rooms","housing_median_age"]
-#plt.figure("correlaciones?")
-#scatter_matrix(housing[attributes], figsize=(12, 8))
-#plt.savefig('src-temp-docker/correlaciones.png')
-
+plt.figure("correlaciones?")
+scatter_matrix(housing[attributes], figsize=(12, 8))
+plt.savefig('src-temp-docker/correlaciones.png')
 
 
 #########################################################################################
@@ -127,7 +126,7 @@ housing["bedrooms_per_room"] =housing["total_bedrooms"]/housing["total_rooms"]
 housing["population_per_household"]=housing["population"]/housing["households"]
 
 corr_matrix = housing.corr()
-#print(corr_matrix["median_house_value"].sort_values(ascending=False))
+print(corr_matrix["median_house_value"].sort_values(ascending=False))
 
 ######################################################################################
 #Preparando el algoritmo
@@ -135,8 +134,8 @@ corr_matrix = housing.corr()
 housing = strat_train_set.drop("median_house_value", axis=1)   #hace un set nuevo sin median_house_value
 housing_labels = strat_train_set["median_house_value"].copy()  #solo etiquetas (median_house_value)
 
-#analizamos total_bedrooms que tiene espacios vacíos.
-#Pueden rellenarse con:
+#Analizamos total_bedrooms que tiene espacios vacíos.
+#Pueden rellenarse con: (elegimos una de las 3 opciones que hay abajo)
 
 #housing_sintb = housing.dropna(subset=["total_bedrooms"])# option 1 elimina valores vacios
 #print(housing_sintb["total_bedrooms"])
@@ -150,7 +149,7 @@ housing["total_bedrooms"].fillna(median, inplace=True)
 #Encoders, transformers y pipelines
 
 housing_cat = housing[["ocean_proximity"]]
-#print(housing_cat.head(10))
+print(housing_cat.head(10))
 
 cat_encoder = OneHotEncoder()
 housing_cat_1hot = cat_encoder.fit_transform(housing_cat)
