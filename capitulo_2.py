@@ -241,67 +241,67 @@ def display_scores(scores):
 #efectivamente decision tree overfittea y el resultado es peor
 
 #random RandomForestRegressor
-#forest_reg = RandomForestRegressor()
-#forest_reg.fit(housing_prepared, housing_labels)
+forest_reg = RandomForestRegressor()
+forest_reg.fit(housing_prepared, housing_labels)
 
-#housing_predictions = forest_reg.predict(housing_prepared)
-#forest_mse = mean_squared_error(housing_labels, housing_predictions)
-#forest_rmse = np.sqrt(forest_mse)
-#print('RMSE=',forest_rmse)
+housing_predictions = forest_reg.predict(housing_prepared)
+forest_mse = mean_squared_error(housing_labels, housing_predictions)
+forest_rmse = np.sqrt(forest_mse)
+print('RMSE=',forest_rmse)
+
 #Cross validation
-#scores = cross_val_score(forest_reg, housing_prepared, housing_labels,
-#                         scoring="neg_mean_squared_error", cv=10)
-#forest_rmse_scores = np.sqrt(-scores) #esto divide el training set en 10 subsets
-#display_scores(forest_rmse_scores)
+scores = cross_val_score(forest_reg, housing_prepared, housing_labels,
+                         scoring="neg_mean_squared_error", cv=10)
+forest_rmse_scores = np.sqrt(-scores) #esto divide el training set en 10 subsets
+display_scores(forest_rmse_scores)
 
 
 #fine tunning
 #gridsearchcv hace una grilla con todos los valores de cada corrida para automatizarlas
 
-#param_grid = [
-#    {'n_estimators': [3, 10, 30], 'max_features': [2, 4, 6, 8]},
-#    {'bootstrap': [False], 'n_estimators': [3, 10], 'max_features': [2, 3, 4]},
-#    ]
-#forest_reg = RandomForestRegressor()
-#grid_search = GridSearchCV(forest_reg, param_grid, cv=5,
-#                           scoring='neg_mean_squared_error',
-#                           return_train_score=True)
-#grid_search.fit(housing_prepared, housing_labels)
-#grid_search.best_params_
-#grid_search.best_estimator_
+param_grid = [
+    {'n_estimators': [3, 10, 30], 'max_features': [2, 4, 6, 8]},
+    {'bootstrap': [False], 'n_estimators': [3, 10], 'max_features': [2, 3, 4]},
+    ]
+forest_reg = RandomForestRegressor()
+grid_search = GridSearchCV(forest_reg, param_grid, cv=5,
+                           scoring='neg_mean_squared_error',
+                           return_train_score=True)
+grid_search.fit(housing_prepared, housing_labels)
+grid_search.best_params_
+grid_search.best_estimator_
 
 #Evaluacion en el test set
-#final_model = lin_reg #uso uno de los modelos previamente entrenados
-#X_test = strat_test_set.drop("median_house_value", axis=1)
-#y_test = strat_test_set["median_house_value"].copy()
-#X_test_prepared = full_pipeline.transform(X_test) #notar que es solo transform, 
-#no fit transform! oara no modificar el test set
-#final_predictions = final_model.predict(X_test_prepared)
-#final_mse = mean_squared_error(y_test, final_predictions)
-#final_rmse = np.sqrt(final_mse) # => evaluates to 47,730.2
-#print('final error =',final_rmse)
+final_model = lin_reg #uso uno de los modelos previamente entrenados
+X_test = strat_test_set.drop("median_house_value", axis=1)
+y_test = strat_test_set["median_house_value"].copy()
+X_test_prepared = full_pipeline.transform(X_test) #notar que es solo transform, no fit transform! para no modificar el test set
+final_predictions = final_model.predict(X_test_prepared)
+final_mse = mean_squared_error(y_test, final_predictions)
+final_rmse = np.sqrt(final_mse) # => evaluates to 47,730.2
+print('final error =',final_rmse)
 
 
 #Ejercicio con SVM
-svm_reg = SVR(kernel='rbf',C=100,gamma=0.1, epsilon=0.1)
-svm_reg.fit(housing_prepared, housing_labels)
+#svm_reg = SVR(kernel='rbf',C=100,gamma=0.1, epsilon=0.1)
+#svm_reg.fit(housing_prepared, housing_labels)
 
 #me quedo con las primeras 5 columnas para probar
-print("Predictions:", svm_reg.predict(some_data_prepared))
-print("Labels:", list(some_labels))
+#print("Predictions:", svm_reg.predict(some_data_prepared))
+#print("Labels:", list(some_labels))
 
 #sacamos el RMSE
-housing_predictions = svm_reg.predict(housing_prepared)
-svm_mse = mean_squared_error(housing_labels, housing_predictions)
-svm_rmse = np.sqrt(svm_mse)
-print('RMSE=',svm_rmse)
+#housing_predictions = svm_reg.predict(housing_prepared)
+#svm_mse = mean_squared_error(housing_labels, housing_predictions)
+#svm_rmse = np.sqrt(svm_mse)
+#print('RMSE=',svm_rmse)
 
 #SVM con grid_search
-parameters = {'kernel':('linear', 'rbf'), 'C':[1, 10]}
-svr = SVR()
-clf = GridSearchCV(svr, parameters)
-clf.fit(housing_prepared, housing_labels)
+#parameters = {'kernel':('linear', 'rbf'), 'C':[1, 10]}
+#svr = SVR()
+#clf = GridSearchCV(svr, parameters)
+#clf.fit(housing_prepared, housing_labels)
 #GridSearchCV(estimator=SVC(),
  #            param_grid={'C': [1, 10], 'kernel': ('linear', 'rbf')})
-print(sorted(clf.cv_results_.keys()))
+#print(sorted(clf.cv_results_.keys()))
 
